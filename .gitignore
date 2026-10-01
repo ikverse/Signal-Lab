@@ -1,0 +1,7 @@
+# The database, downloads and reports are local; only code, app and docs go to GitHub.
+data/
+reports/
+.venv/
+__pycache__/
+*.pyc
+*.log

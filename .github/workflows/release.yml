@@ -1,0 +1,47 @@
+name: release
+
+# A tag vX.Y.Z publishes that version: tests first, then the zip the phone installs, its
+# SHA-256, and the CHANGELOG section as release notes. If the tests fail, nothing is published.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -t . -v
+
+      - name: VERSION must match the tag
+        run: test "v$(tr -d '[:space:]' < VERSION)" = "$GITHUB_REF_NAME"
+
+      - name: Build the zip and its checksum
+        run: |
+          git archive --format=zip -o "signal-lab-$GITHUB_REF_NAME.zip" "$GITHUB_REF_NAME"
+          sha256sum "signal-lab-$GITHUB_REF_NAME.zip" > "signal-lab-$GITHUB_REF_NAME.zip.sha256"
+
+      - name: Release notes from CHANGELOG.md
+        run: |
+          python - <<'EOF' > notes.md
+          import os, re
+          v = os.environ["GITHUB_REF_NAME"].lstrip("v")
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          m = re.search(rf"^## {re.escape(v)}\s*\n(.*?)(?=^## |\Z)", text, re.S | re.M)
+          print(m.group(1).strip() if m else f"Signal Lab {v}")
+          EOF
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "signal-lab-$GITHUB_REF_NAME.zip" "signal-lab-$GITHUB_REF_NAME.zip.sha256" \
+            --title "Signal Lab ${GITHUB_REF_NAME#v}" --notes-file notes.md --latest
