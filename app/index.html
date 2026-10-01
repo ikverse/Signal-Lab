@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>Signal Lab</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="vendor/phosphor/style.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="shell">
+  <main id="screen"></main>
+  <nav id="rail" aria-label="Screens">
+    <a href="#/chart" data-route="chart" title="Chart"><i class="ph ph-chart-line-up"></i></a>
+    <a href="#/scorecard" data-route="scorecard" title="Scorecard"><i class="ph ph-list-checks"></i></a>
+    <a href="#/learn" data-route="learn" title="Learn"><i class="ph ph-book-open"></i></a>
+    <a href="#/alerts" data-route="alerts" title="Alerts"><i class="ph ph-bell"></i><span class="badge" id="alert-badge"></span></a>
+    <a href="#/settings" data-route="settings" title="Settings"><i class="ph ph-gear"></i><span class="badge" id="update-badge"></span></a>
+  </nav>
+</div>
+<div id="dim" aria-hidden="true"></div>
+<script src="vendor/klinecharts.min.js"></script>
+<script src="vendor/marked.min.js"></script>
+<script src="vendor/mermaid.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
